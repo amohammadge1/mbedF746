@@ -1,21 +1,30 @@
 #include <mbed.h>
 #include <threadLvgl.h>
-
-#include "demos/lv_demos.h"
 #include <cstdio>
+#include "lvgl.h"
+#include "simon_game.h"
 
+// Thread for LVGL
 ThreadLvgl threadLvgl(30);
 
 int main() {
-
+    // Initialize LVGL
     threadLvgl.lock();
-
-    lv_demo_widgets();
-
+    lv_init(); // Ensure LVGL is initialized
+    // Initialize display and input drivers here if necessary
     threadLvgl.unlock();
 
+    // Start the Simon game
+    app_main();
+
+    // Main loop
     while (1) {
-        // put your main code here, to run repeatedly:
-        ThisThread::sleep_for(10ms);
+        // Update LVGL
+        threadLvgl.lock();
+        lv_timer_handler();
+        threadLvgl.unlock();
+
+        // Sleep for a short period to allow other tasks to run
+        ThisThread::sleep_for(5ms);
     }
 }
